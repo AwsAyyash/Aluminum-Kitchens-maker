@@ -1,0 +1,156 @@
+# project_Full
+
+drop database aluminumcompany;
+create database AluminumCompany;
+use AluminumCompany;
+
+CREATE TABLE Supplier (
+    supplierId INT,
+    supplierLocation VARCHAR(32),
+    supplierPhoneNum INT,
+    PRIMARY KEY (supplierId)
+);
+
+CREATE TABLE Worker (
+    workerId INT ,
+    workerName VARCHAR(32),
+    workerPhoneNum INT,
+    salary DOUBLE,
+    age INT,
+    insuranceNum INT,
+    employmentDate DATE,
+    PRIMARY KEY (workerId)
+);
+
+CREATE TABLE Customer (
+    customerId INT,
+    phoneNum VARCHAR(32),
+    customerName VARCHAR(32),
+    PRIMARY KEY (customerId)
+);
+
+CREATE TABLE Payment (
+    paymentId INT,
+    amount REAL,
+    paymentDate DATE,
+    workerId INT,
+    supplierId INT,
+    customerId INT,
+    PRIMARY KEY (paymentId),
+    FOREIGN KEY (customerId)
+        REFERENCES Customer (customerId) on delete CASCADE,
+    FOREIGN KEY (workerId)
+        REFERENCES Worker (workerId)on delete CASCADE,
+    FOREIGN KEY (supplierId)
+        REFERENCES Supplier (supplierId) on delete CASCADE
+);
+
+CREATE TABLE RawMaterial (
+    rawMaterialId INT,
+    color VARCHAR(32),
+    rawMaterialPrice REAL,
+	supplierId INT,
+    PRIMARY KEY (rawMaterialId),
+    FOREIGN KEY (supplierId) REFERENCES Supplier (supplierId) on delete CASCADE
+
+);
+CREATE TABLE Orders (
+    orderId INT,
+    price REAL,
+    orderDate DATE,
+    deliveryLocation VARCHAR(32),
+    size REAL,
+    customerId INT,
+    paymentId INT,
+    rawMaterialId INT,
+
+    PRIMARY KEY (orderId),
+    FOREIGN KEY (customerId)
+        REFERENCES Customer (customerId) on delete CASCADE,
+        FOREIGN KEY (rawMaterialId)
+        REFERENCES RawMaterial (rawMaterialId) on delete CASCADE
+
+);
+
+
+
+
+
+CREATE TABLE OrdersToWorkers (
+    workerId INT,
+    orderId INT,
+    PRIMARY KEY (workerId , orderId),
+    FOREIGN KEY (orderId)
+        REFERENCES Orders (orderId)on delete CASCADE,
+    FOREIGN KEY (workerId)
+        REFERENCES Worker (workerId) on delete CASCADE
+);
+
+insert into supplier values(1,'Ramallah',056993013);
+insert into supplier values(2,'Nablus',0569654013);
+insert into supplier values(11,'Jerusalem',0569000013);
+insert into supplier values(3,'Ramallah',056995553);
+
+
+
+insert into RawMaterial values(11,'red',55.5, 2);
+insert into RawMaterial values(12,'black',100.5, 11);
+insert into RawMaterial values(13,'white',32.5, 3);
+insert into RawMaterial values(14,'blue',43.5, 2);
+
+
+insert into customer  values (1,'056993012','Aws'); -- step 1
+insert into customer  values (2,'05890012','Omar'); -- step 1
+
+SELECT * FROM RawMaterial;
+SELECT * FROM  supplier;
+SELECT * FROM  customer;
+
+
+insert into worker values(1,'Ahmad',056993013,5000,22,455,'2020-06-20');
+
+insert into payment values(1,555.5,'2021-06-20',1,1); -- step 3
+
+
+insert into orders (orderId,price,orderDate,deliveryLocation, size,customerID,rawmaterialId) values(1,22.2,'2021-06-20','Ramallah',55.2,1,11); -- step 2
+
+insert into worker values ( 4 , 'omar' , 0599 , 2300.0 , 20 , 123 , '2020-6-3' ) ;
+insert into worker values ( 2 , 'aws' , 0569 , 2000.0 , 21 , 111 , '2010-6-4' ) ;
+insert into worker values ( 3 , 'yara' , 0539 , 1450.0 , 19 , 222 , '2021-6-5' ) ;
+
+
+insert into payment( paymentid ,amount , paymentDate , workerId) values (1 , 2000.0 , '2020-7-3' , 2 ) ;
+insert into payment( paymentid ,amount , paymentDate , CustomerId) values (2 , 22.2 , '2020-7-3' , 1 ) ;
+
+
+SELECT
+    *
+FROM
+    worker;
+
+SELECT
+		c.customerId,phoneNum,customerName,orderId, price, orderDate, deliveryLocation, size, rawMaterialId
+FROM customer c , orders o
+WHERE c.customerId = o.customerId;
+
+select * from rawMaterial;
+SELECT * from customer;
+SELECT * FROM  orders;
+
+select * from payment order by paymentId;
+
+insert into payment ( paymentid , amount , paymentdate , workerid ) values ( 1 , 100 , '2020-6-3' , 10 ) ;
+
+SELECT * from payment;
+
+SELECT PaymentId from Payment where PaymentId =3;
+
+
+
+SELECT count(*) FROM  orders where deliveryLocation='Ramallah' ;
+
+SELECT R.rawMaterialId, R.rawMaterialPrice
+FROM RawMaterial R
+WHERE
+R.rawMaterialPrice = (select max(rawMaterialPrice) from RawMaterial);
+
